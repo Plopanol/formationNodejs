@@ -1,4 +1,4 @@
-import { InsertOneResult, ObjectId } from "mongodb";
+import { DeleteResult, InsertOneResult, ObjectId } from "mongodb";
 import { db } from "../configs/mongodb.config";
 import { Movie } from "../models/movie.model";
 
@@ -25,8 +25,8 @@ class MovieRepository {
         return result.then(result => ({ ...movie, _id: result.insertedId }));
     }
 
-    async deleteById(id: number): Promise<void> {
-        (await db).collection<Movie>('movies').deleteOne({ _id: id });
+    async deleteById(id: number): Promise<Boolean> {
+        return (await db).collection<Movie>('movies').deleteOne({ _id: id }).then(result => result.acknowledged);
     }
 }
 // Export pour le rendre accessible

@@ -49,7 +49,12 @@ export const instertOne = async (req: Request, res: Response) => {
 // Delete
 export const deleteById = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
-    await movieRepository.deleteById(id);
+    const retour = await movieRepository.deleteById(id);
+    if (retour) {
+        res.status(200).send();
+    } else {
+        res.status(404).send(`erreur lors de l'insert:` + id);
+    }
 }
 
 // Export afin que le controller soit accessible par l'index.tx
@@ -59,3 +64,4 @@ router.get('/', findAll);
 router.get('/:id', findById);
 router.get('/title/:title', findByTitle);
 router.post('/', instertOne);
+router.delete('/:id', deleteById);
