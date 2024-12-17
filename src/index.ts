@@ -4,6 +4,7 @@ import { db } from './configs/mongodb.config';
 import { router as movieRouter } from './controllers/movie.controller';
 
 const app: Express = express();
+app.use(express.json());
 
 db.then(db => db.collection('movies').find({}).limit(10).forEach(m => console.log(m)));
 
