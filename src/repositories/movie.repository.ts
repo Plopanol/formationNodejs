@@ -25,8 +25,14 @@ class MovieRepository {
         return result.then(result => ({ ...movie, _id: result.insertedId }));
     }
 
+    async update(movie: Movie): Promise<boolean> {
+        return (await db).collection<Movie>('movies')
+            .replaceOne({ _id: movie._id }, movie)
+            .then(result => result.acknowledged && result.modifiedCount === 1);
+    }
+
     async deleteById(id: number): Promise<Boolean> {
-        return (await db).collection<Movie>('movies').deleteOne({ _id: id }).then(result => result.acknowledged);
+        return (await db).collection<Movie>('movies').deleteOne({ _id: id }).then(result => result.acknowledged && result.deletedCount === 1);
     }
 }
 // Export pour le rendre accessible

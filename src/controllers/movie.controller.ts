@@ -46,6 +46,20 @@ export const instertOne = async (req: Request, res: Response) => {
     }
 }
 
+// Update
+export const update = async (req: Request, res: Response) => {
+    const id: number | ObjectId = isNaN(Number(req.params.id))
+        ? new ObjectId(req.params.id)
+        : Number(req.params.id);
+    const movie = req.body;
+    console.log("id: " + id);
+    console.log("movie._id: " + movie._id);
+    if (id.toString() !== movie._id.toString())
+        res.status(400).send('ids in url and body do not match');
+    else if (await movieRepository.update(movie))
+        res.sendStatus(200);
+}
+
 // Delete
 export const deleteById = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
@@ -65,3 +79,4 @@ router.get('/:id', findById);
 router.get('/title/:title', findByTitle);
 router.post('/', instertOne);
 router.delete('/:id', deleteById);
+router.put('/:id', update);
