@@ -5,12 +5,13 @@ import { db } from './configs/mongodb.config';
 import { router as movieRouter } from './controllers/movie.controller';
 import { router as userRouter } from './controllers/user.controller';
 import { router as authenticationRouter } from './controllers/authentication.controller';
-import { auth } from './middleware/auth.middleware';
+import { jwtCheckValidation } from './middleware/jwtCkeckValidation.middleware'
 
 const app: Express = express();
 
 // Permet d'ajouter le parser automatiquement sur les routes Rest
 app.use(express.json());
+app.use(jwtCheckValidation);
 
 // Exemple pour executer une requete mongodb
 db.then(db => db.collection('movies').find({}).limit(10).forEach(m => console.log(m)));
@@ -18,7 +19,7 @@ db.then(db => db.collection('movies').find({}).limit(10).forEach(m => console.lo
 // On assigne la route /movies à un controlleur movieRouter
 app.use('/movies', movieRouter);
 // Ajout le middleware authentication
-app.use('/users', auth, userRouter);
+app.use('/users', userRouter);
 app.use('/authenticate', authenticationRouter);
 
 // Listener sur la root /
