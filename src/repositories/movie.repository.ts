@@ -1,9 +1,11 @@
 import { DeleteResult, InsertOneResult, ObjectId } from "mongodb";
 import { db } from "../configs/mongodb.config";
 import { Movie } from "../models/movie.model";
+import { Vote } from "../models/vote.model";
 
 // Repository Movie
 class MovieRepository {
+
     async findAll(): Promise<Movie[]> {
         return (await db).collection('movies')
             .find<Movie>({})

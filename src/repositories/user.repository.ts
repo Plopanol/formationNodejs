@@ -1,9 +1,19 @@
-import { DeleteResult, InsertOneResult, ObjectId } from "mongodb";
+import { DeleteResult, InsertOneResult, ObjectId, Timestamp } from "mongodb";
 import { db } from "../configs/mongodb.config";
 import { User } from "../models/user.model";
+import { Vote } from "../models/vote.model";
+import { timeStamp } from "console";
 
 // Repository user
 class UserRepository {
+
+    async ajoutVote(vote: Vote, idMovie: number | ObjectId, idUser: number | ObjectId): Promise<boolean> {
+        console.log(vote);
+        vote.movieid = idMovie;
+        const user = (await db).collection<User>('users').findOne({ _id: idUser }).then(user => user?.movies.push({ movieId: vote.movieid, rating: vote.rating, timestamp: new Date() }));
+        return (await db).collection<User>('users').replaceOne({ _id: idUser }, user).then(result => result.acknowledged && result.modifiedCount === 1);
+    }
+
     async findAll(): Promise<User[]> {
         return (await db).collection('users')
             .find<User>({})

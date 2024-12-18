@@ -3,6 +3,8 @@ import 'dotenv/config';
 import { movieRepository } from '../repositories/movie.repository';
 import { Request, Response } from "express";
 import { ObjectId } from 'mongodb';
+import { MyRequest } from '../middlewares/jwtCkeckValidation.middleware';
+import { userRepository } from '../repositories/user.repository';
 
 // Controller pour la route /movies
 
@@ -71,6 +73,25 @@ export const deleteById = async (req: Request, res: Response) => {
     }
 }
 
+// Rate
+export const vote = async (req: MyRequest, res: Response) => {
+    const idMovie: number | ObjectId = isNaN(Number(req.params.id))
+        ? new ObjectId(req.params.id)
+        : Number(req.params.id);
+
+    const idUser: number | ObjectId = isNaN(Number(req.jwtToken?.sub))
+        ? new ObjectId(req.jwtToken?.sub)
+        : Number(req.jwtToken?.sub);
+
+    const rating = req.body;
+    const retour = await userRepository.ajoutVote(rating, idMovie, idUser);
+    if (retour) {
+        res.status(200).send();
+    } else {
+        res.status(404).send(`erreur lors de l'insert:` + vote);
+    }
+}
+
 // Export afin que le controller soit accessible par l'index.tx
 export const router = express.Router();
 // On set les routes internes du controller movies
@@ -80,3 +101,4 @@ router.get('/title/:title', findByTitle);
 router.post('/', instertOne);
 router.delete('/:id', deleteById);
 router.put('/:id', update);
+router.post('/vote/:id', vote);

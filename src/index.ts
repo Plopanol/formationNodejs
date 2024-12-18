@@ -5,10 +5,10 @@ import { db } from './configs/mongodb.config';
 import { router as movieRouter } from './controllers/movie.controller';
 import { router as userRouter } from './controllers/user.controller';
 import { router as authenticationRouter } from './controllers/authentication.controller';
-import { jwtCheckValidation } from './middleware/jwtCkeckValidation.middleware'
-import { isAnonymous } from './middleware/isAnonymous.middleware'
-import { isAuthenticate } from './middleware/isAuthenticate.middleware'
-import { tokenExpiredErrorHandler } from './middleware/errorHandlers.middleware';
+import { jwtCheckValidation } from './middlewares/jwtCkeckValidation.middleware'
+import { isAnonymous } from './middlewares/isAnonymous.middleware'
+import { isAuthenticated } from './middlewares/isAuthenticated.middleware'
+import { tokenExpiredErrorHandler } from './middlewares/errorHandlers.middleware';
 
 const app: Express = express();
 
@@ -20,7 +20,7 @@ app.use(jwtCheckValidation);
 db.then(db => db.collection('movies').find({}).limit(10).forEach(m => console.log(m)));
 
 // On assigne la route /movies à un controlleur movieRouter
-app.use('/movies', isAnonymous, movieRouter);
+app.use('/movies', movieRouter);
 // Ajout le middleware authentication
 app.use('/users', userRouter);
 app.use('/authenticate', authenticationRouter);

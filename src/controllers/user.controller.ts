@@ -4,7 +4,7 @@ import { userRepository } from '../repositories/user.repository';
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { ObjectId } from 'mongodb';
-import { isAuthenticate } from '../middleware/isAuthenticate.middleware';
+import { isAuthenticated } from '../middlewares/isAuthenticated.middleware';
 
 // Controller pour la route /users
 
@@ -89,7 +89,7 @@ export const deleteById = async (req: Request, res: Response) => {
 
 // Export afin que le controller soit accessible par l'index.tx
 export const router = express.Router();
-router.use(isAuthenticate);
+router.use(isAuthenticated);
 // On set les routes internes du controller users
 router.get('/', findAll);
 router.get('/:id', findById);
