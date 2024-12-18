@@ -28,9 +28,10 @@ export const authenticate = async (req: Request, res: Response) => {
 }
 
 export const router = express.Router();
+router.post('/', authenticate);
 
 const generateToken = (user: User, expires: number) => {
-    jwt.sign(
+    return jwt.sign(
         { sub: user._id, name: user.name },
         process.env.JWT_SECRET!,
         { expiresIn: expires }
