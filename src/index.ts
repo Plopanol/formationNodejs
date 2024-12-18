@@ -8,6 +8,7 @@ import { router as authenticationRouter } from './controllers/authentication.con
 import { jwtCheckValidation } from './middleware/jwtCkeckValidation.middleware'
 import { isAnonymous } from './middleware/isAnonymous.middleware'
 import { isAuthenticate } from './middleware/isAuthenticate.middleware'
+import { tokenExpiredErrorHandler } from './middleware/errorHandlers.middleware';
 
 const app: Express = express();
 
@@ -33,3 +34,5 @@ app.get('/', (req, res) => {
 app.listen(process.env.PORT, () => {
     console.log(`server running on port ${process.env.PORT}`);
 })
+
+app.use(tokenExpiredErrorHandler);
