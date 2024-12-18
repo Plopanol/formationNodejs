@@ -17,6 +17,7 @@ db.then(db => db.collection('movies').find({}).limit(10).forEach(m => console.lo
 
 // On assigne la route /movies à un controlleur movieRouter
 app.use('/movies', movieRouter);
+// Ajout le middleware authentication
 app.use('/users', auth, userRouter);
 app.use('/authenticate', authenticationRouter);
 
