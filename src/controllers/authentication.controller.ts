@@ -4,12 +4,14 @@ import { userRepository } from "../repositories/user.repository";
 import bcrypt from "bcrypt";
 import { User } from "../models/user.model";
 import jwt from 'jsonwebtoken';
+import { idFromString } from "../utils/weirdId.utils";
 
-export const authenticate = async (req: Request, res: Response) => {
+const authenticate = async (req: Request, res: Response) => {
     const jwtRequest: JwtRequest = req.body;
+    let user;
     switch (jwtRequest.grantType) {
         case 'password':
-            const user = await userRepository.findByEmail(jwtRequest.email);
+            user = await userRepository.findByEmail(jwtRequest.email);
             if (user === null ||
                 !await bcrypt.compare(jwtRequest.password, user.password))
                 res.sendStatus(401);
@@ -20,17 +22,26 @@ export const authenticate = async (req: Request, res: Response) => {
                 });
             break;
         case 'refreshToken':
-            res.status(401).send('Invalid credentials');
+            const decodedRefreshToken = jwt.verify(jwtRequest.refreshToken, process.env.JWT_SECRET!);
+            const id = idFromString(decodedRefreshToken.sub as string);
+            user = await userRepository.findById(id);
+            if (!user)
+                res.sendStatus(401);
+            else
+                res.json({
+                    accessToken: generateToken(user, 600),
+                    refreshToken: generateToken(user, 3600)
+                });
             break;
         default:
-            break;
+            res.sendStatus(400);
     }
 }
 
 export const router = express.Router();
 router.post('/', authenticate);
 
-const generateToken = (user: User, expires: number) => {
+const generateToken = (user: User, expires: number): string => {
     return jwt.sign(
         { sub: user._id, name: user.name },
         process.env.JWT_SECRET!,
